@@ -1,0 +1,183 @@
+{{extend '../layouts/layout.html'}}
+{{block 'head'}}
+  <style>
+    label.error{
+      color: red !important;
+    }
+    textarea.error,input.error{
+      border:solid 2px #fa5050 !important;
+      box-shadow: 0px 2px 1px #fa5050;
+      outline-color:  #fa5050;
+    }
+    
+    textarea.valid,input.valid{
+      border:solid 2px #7dff88 !important;
+      box-shadow: 0px 2px 1px #7dff88;
+    }
+  </style>
+{{/block}}
+{{block 'content'}}
+<div class="container-fluid">
+  <div class="page-title">
+    <h1>写文章</h1>
+  </div>
+  <!-- 有错误信息时展示 -->
+  <!-- <div class="alert alert-danger">
+    <strong>错误！</strong>发生XXX错误
+  </div> -->
+  <form class="row" id="Dataform">
+    <div class="col-md-9">
+      <div class="form-group">
+        <label for="title">标题</label>
+        {{each list value}}
+        <input id="title" dhd="{{value.article_id}}" class="form-control input-lg" name="title" type="text" value="{{value.article_title}}">
+      </div>
+      <div class="form-group">
+        <label for="content">标题</label>
+        <!-- <textarea id="content" class="form-control input-lg" name="content" cols="30" rows="10" id="editor"></textarea> -->
+        <div id="editor">
+         {{@ value.article_body}}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-3">
+      <div class="form-group">
+        <label for="slug">别名</label>
+        <input id="slug" class="form-control" name="slug" type="text" placeholder="slug" value="{{value.article_slug}}">
+        <p class="help-block">https://example.com/post/<strong>slug</strong></p>
+      </div>
+      <div class="form-group">
+        <label for="feature">特色图像</label>
+        <!-- show when image chose -->
+        <img class="help-block thumbnail" id="IMG" style="display:block" src="{{value.article_file}}">
+        <input id="feature" class="form-control" name="feature" type="file">
+      </div>
+      <div id="two" class="form-group" dvd="{{value.article_cateid}}">
+          <label for="category" value>所属分类</label>
+          
+      </div>
+      <div class="form-group">
+        <label for="created">发布时间</label>
+        <input id="created" class="form-control" name="created" type="datetime-local">
+      </div>
+      <div class="form-group">
+        <label for="status">状态</label>
+        <select id="status" class="form-control" name="status">
+          <option value="草稿">草稿</option>
+          <option value="已发布">已发布</option>
+        </select>
+      </div>
+      {{/each}}
+      <div class="form-group">
+        <button id="four" class="btn btn-primary" type="submit">保存</button>
+      </div>
+    </div>
+  </form>
+</div>
+{{/block}}
+{{block 'script'}}
+  <script type="text/javascript" src="../../node_modules/jquery-validation/dist/jquery.validate.js"></script>
+  <script type="text/javascript" src="../../node_modules/jquery-validation/dist/localization/messages_zh.js"></script>
+  <script type="text/javascript" src="../../node_modules/wangeditor/release/wangEditor.min.js"></script>
+  <script type="text/javascript" src="../../node_modules/art-template/lib/template-web.js"></script>
+  
+  <script type="text/template" id="one">
+    <select id="category" class="form-control" name="category">  
+        {%each list value%}
+       
+        <option class="selec" value="{%value.cate_id%}">{%value.cate_name%}</option>
+       
+        {%/each%}
+    </select>
+  
+  </script>
+  <script>
+    template.defaults.rules[1].test = /{%([@#]?)[ \t]*(\/?)([\w\W]*?)[ \t]*%}/
+        //渲染所属分类
+        my()
+        function my(){
+          $.ajax({
+            url:'/posts/add/edit/C',
+            dataType:'json',
+            type:'get',
+            success:function(msg){
+              if(msg.success){
+                var shuzi=$('#two').attr('dvd')
+                var sss=template('one',{list:msg.list})
+                $('#two').append(sss)
+                selected(shuzi)
+              }       
+            }
+          })
+        }
+        function selected(shuzi){
+          let se=$('.selec').length
+          for(var i=0;i<se;i++){
+            if($('.selec').eq(i).attr('value')==shuzi){
+              $('.selec').eq(i).attr('selected','selected')
+            }
+          }
+        }
+        
+        //预览文件
+        $('#feature').change(function(){
+          var file=this.files;
+          console.log(file)
+          var url=window.URL.createObjectURL(new Blob(file))
+          $('#IMG').attr('src',url)
+        })
+
+        //文件上传
+        // $('#four').mouseenter(function(){
+        //   if($('#feature').val().length==0){
+            
+        //   }
+        // })
+        
+        var E = window.wangEditor
+        var editor = new E('#editor')
+        
+        editor.customConfig.uploadImgServer = '/api/upload'
+        editor.customConfig.uploadFileName='file'
+        editor.create()
+        $('#Dataform').validate({
+          rules:{
+            title:{
+              required:true,
+            },
+            content:{
+              required:true,
+            },
+            slug:{
+              required:true,
+            },
+            category:{
+              required:true,
+            },
+            created:{
+              required:true,
+            }
+          },
+          submitHandler:kai
+        })
+        function kai() {
+        var fordate=new FormData($('#Dataform')[0])
+        console.log(fordate)
+        fordate.append('content',editor.txt.html())
+        $.ajax({
+          url:'/posts/postAdd/edit?id='+$('#title').val(),
+          type:'post',
+          data:fordate,
+          dataType:'json',
+          processData: false,  // 不处理数据
+          contentType: false, 
+          success:function(msg){
+            if(msg.success){
+              $('#Dataform').last('input').val('')
+              return window.alert(msg.content)
+            }
+          }
+        })
+    }
+  </script>
+{{/block}}

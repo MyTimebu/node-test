@@ -1,0 +1,9 @@
+module.exports={
+    dev:true,
+    db:{
+        host:'localhost',
+        user:'root',
+        password:'root',
+        database:'alishow'
+    }
+}

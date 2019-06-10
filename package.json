@@ -1,0 +1,27 @@
+{
+  "name": "alishow",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "art-template": "^4.13.2",
+    "blueimp-md5": "^2.10.0",
+    "cors": "^2.8.5",
+    "errorhandler": "^1.5.0",
+    "express": "^4.16.4",
+    "express-art-template": "^1.0.1",
+    "express-mysql-session": "^2.1.0",
+    "express-session": "^1.15.6",
+    "jquery": "^3.3.1",
+    "jquery-validation": "^1.19.0",
+    "moment": "^2.24.0",
+    "multer": "^1.4.1",
+    "mysql": "^2.16.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
